@@ -9,6 +9,7 @@
 #include "AIBehavior/StrafeStrategy.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Enemy.generated.h"
 
 // List of AI States
@@ -26,6 +27,8 @@ enum class EAIState : uint8
 // Declarations
 class UAnimMontage;
 class AEnemyAIController;
+class USoundCue;
+class UNiagaraSystem;
 
 UCLASS()
 class PALADINTUTORIAL_API AEnemy : public ACharacter, public IHitInterface
@@ -87,6 +90,9 @@ protected:
 
 	FName GetAttackSectionName(int32 SectionCount);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void EnemyDeath();
+
 private:
 	// Combat Strategy Logic
 	TWeakObjectPtr<UPatrolStrategy> PatrolStrategy;
@@ -131,6 +137,15 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	float StrafeDelayTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	USoundCue* ImpactSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	UNiagaraSystem* ImpactNiagara;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	FName ImpactBoneLocation;
 
 public:
 	// Getters and Setters

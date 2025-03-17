@@ -11,6 +11,7 @@
 #include "HitInterface.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 #include "Perception/AISense_Sight.h"
 
 // Sets default values
@@ -291,12 +292,16 @@ float APaladinCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 		if (Health - DamageAmount <= 0.f)
 		{
 			Health = 0.f;
-			// Play Death Montage
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Player Died"));
+			// Play Death Event
+			DeathOfPlayer();
 		}
 		else
 		{
-			Health -= DamageAmount;	
+			Health -= DamageAmount;
+			if (BodyImpactSound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, BodyImpactSound, GetActorLocation());
+			}
 		}
 	}
 	else // Is Blocking True
@@ -304,13 +309,17 @@ float APaladinCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 		// Check If Player is Facing Enemy - Run Dot Product Logic
 		if (PlayerFacingActor(DamageCauser))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("Blocking And Facing Enemy"));
-			// Play Hit Sound for Shield
+			if (ShieldImpactSound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, ShieldImpactSound, GetActorLocation());
+			}
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Blocking But Not Facing Enemy"));
-			// Play Hit Flesh Sound
+			if (BodyImpactSound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, BodyImpactSound, GetActorLocation());
+			}
 			Health -= DamageAmount;
 		}
 	}

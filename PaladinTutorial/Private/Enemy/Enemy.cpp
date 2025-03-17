@@ -6,6 +6,7 @@
 #include "PaladinCharacter.h"
 #include "Enemy/EnemyAIController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AEnemy::AEnemy() :
@@ -79,7 +80,6 @@ void AEnemy::OnRightWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 
 	if (Character)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("Hit Player"));
 		UGameplayStatics::ApplyDamage(
 			Character,
 			BaseDamage,
@@ -236,7 +236,15 @@ void AEnemy::Tick(float DeltaTime)
 void AEnemy::HitInterface_Implementation(FHitResult HitResult)
 {
 	// Impact Sound
+	if (ImpactSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+	}
+
 	// Impact Niagara
+	const FVector SpawnLocation = GetMesh()->GetBoneLocation(ImpactBoneLocation, EBoneSpaces::WorldSpace);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactNiagara, SpawnLocation, GetActorRotation());
+	
 	// Hit Montage
 }
 
@@ -247,7 +255,9 @@ float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 	{
 		Health = 0.f;
 		// Call Blueprint Function to Play Death Montage and Clean Things Up
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Enemy Died"));
+		EnemyAIController->UnPossess();
+		SetActorEnableCollision(false);
+		EnemyDeath();
 	}
 	else
 	{

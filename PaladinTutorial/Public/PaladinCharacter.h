@@ -15,6 +15,7 @@ class UBoxComponent;
 class UInputMappingContext;
 class UInputAction;
 class UAnimMontage;
+class USoundCue;
 
 UCLASS()
 class PALADINTUTORIAL_API APaladinCharacter : public ACharacter
@@ -100,6 +101,10 @@ protected:
 	void StartBlocking();
 	void StopBlocking();
 
+	// Handle Logic After Player Dies
+	UFUNCTION(BlueprintImplementableEvent)
+	void DeathOfPlayer();
+
 	void AnimMontagePlay(UAnimMontage* MontageToPlay, FName SectionName = "Default", float PlayRate = 1.0f);
 
 	// Right Weapon Overlap
@@ -137,6 +142,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	float MaxHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	USoundCue* BodyImpactSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	USoundCue* ShieldImpactSound;
 
 	bool PlayerFacingActor(AActor* FacingActor);
 
