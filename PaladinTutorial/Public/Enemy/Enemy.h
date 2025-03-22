@@ -25,7 +25,7 @@ enum class EAIState : uint8
 };
 
 // Declarations
-class UAnimMontage;
+	class UAnimMontage;
 class AEnemyAIController;
 class USoundCue;
 class UNiagaraSystem;
@@ -43,8 +43,11 @@ public:
 	void EnterCombat();
 	void ExitCombat();
 
-	void MeleeAttack();
-	void ResetMeleeAttack();
+	void MeleeRangeAttack();
+	void ResetMeleeRangeAttack();
+
+	// Spawn Projectile For Enemy Projectile
+	void SpawnProjectile();
 
 	// Activate and Deactivate Weapon Box
 	virtual void ActivateRightWeapon();
@@ -115,6 +118,10 @@ private:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	FName RightWeaponSocketName = "SwordSocket";
+
+	// Get Blueprint of Projectile. Set this in Enemy Blueprint
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class AEnemyProjectile> ProjectileBP;
 	
 	// Base Damage
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
@@ -125,6 +132,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	float MaxHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	float AttackSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AttackMontage;

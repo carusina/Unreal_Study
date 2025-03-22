@@ -5,6 +5,8 @@
 
 #include "PaladinCharacter.h"
 #include "Enemy/EnemyAIController.h"
+#include "Enemy/EnemyProjectile.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
@@ -13,6 +15,7 @@ AEnemy::AEnemy() :
 	BaseDamage(5.f),
 	Health(100.f),
 	MaxHealth(100.f),
+	AttackSpeed(1.f),
 	AttackRange(300.f),
 	AcceptanceRange(125.f)
 {
@@ -89,7 +92,7 @@ void AEnemy::OnRightWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 	}
 }
 
-void AEnemy::MeleeAttack()
+void AEnemy::MeleeRangeAttack()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 
@@ -107,23 +110,35 @@ void AEnemy::MeleeAttack()
 			float const SectionLength = AttackMontage->GetSectionLength(SectionIndex);
 
 			// Play Montage Section
-			AnimInstance->Montage_Play(AttackMontage);
+			AnimInstance->Montage_Play(AttackMontage, AttackSpeed);
 			AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
 
 			// Call Reset Melee Attack
 			FTimerHandle TimerResetAttack;
-			GetWorldTimerManager().SetTimer(TimerResetAttack, this, &AEnemy::ResetMeleeAttack, SectionLength, false);
+			GetWorldTimerManager().SetTimer(TimerResetAttack, this, &AEnemy::ResetMeleeRangeAttack, SectionLength, false);
 		}
 	}
 }
 
-void AEnemy::ResetMeleeAttack()
+void AEnemy::ResetMeleeRangeAttack()
 {
 	float RandomChance = FMath::FRand();
 	if (RandomChance <= 0.3f)
 	{
 		CurrentState = EAIState::Strafe;
 	}
+}
+
+void AEnemy::SpawnProjectile()
+{
+	// Get Socket Transform
+	FTransform SocketTransform = GetMesh()->GetSocketTransform("ProjectileSocket");
+
+	// Set Spawn Parameters
+	FActorSpawnParameters SpawnParameters;
+
+	// Spawn the Projectile
+	AEnemyProjectile* Projectile = GetWorld()->SpawnActor<AEnemyProjectile>(ProjectileBP, SocketTransform, SpawnParameters);
 }
 
 void AEnemy::ResetAttack()

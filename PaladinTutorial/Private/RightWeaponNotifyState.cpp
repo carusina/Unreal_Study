@@ -17,7 +17,7 @@ void URightWeaponNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 	}
 }
 
-void URightWeaponNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+void URightWeaponNotifyState::NotifyEnd(USkeletalMeshComponent*	 MeshComp, UAnimSequenceBase* Animation,
 	const FAnimNotifyEventReference& EventReference)
 {
 	if (MeshComp && MeshComp->GetOwner())
