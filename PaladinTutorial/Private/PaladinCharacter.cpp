@@ -145,7 +145,7 @@ void APaladinCharacter::MotionWarpAttack(float AttackDistance, FName MotionWarpN
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Enemy is Null Or Motion Warping Component is Null"));
 		}
-		DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1, 0 ,1);
+		//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1, 0 ,1);
 	}
 }
 
@@ -268,7 +268,7 @@ void APaladinCharacter::DodgeRight()
 
 void APaladinCharacter::StartBlocking()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, TEXT("Start Blocking"));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, TEXT("Start Blocking"));
 	
 	UPaladinAnimInstance* AnimInstance = Cast<UPaladinAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
@@ -281,7 +281,7 @@ void APaladinCharacter::StartBlocking()
 
 void APaladinCharacter::StopBlocking()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, TEXT("Stop Blocking"));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, TEXT("Stop Blocking"));
 
 	UPaladinAnimInstance* AnimInstance = Cast<UPaladinAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)

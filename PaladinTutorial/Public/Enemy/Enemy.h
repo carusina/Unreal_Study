@@ -25,7 +25,7 @@ enum class EAIState : uint8
 };
 
 // Declarations
-	class UAnimMontage;
+class UAnimMontage;
 class AEnemyAIController;
 class USoundCue;
 class UNiagaraSystem;
@@ -122,6 +122,10 @@ private:
 	// Get Blueprint of Projectile. Set this in Enemy Blueprint
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class AEnemyProjectile> ProjectileBP;
+
+	// Enemy Name
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	FName EnemyName;
 	
 	// Base Damage
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
