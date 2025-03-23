@@ -57,6 +57,8 @@ void APaladinCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CurrentState = EPlayerState::Ready;
+	
 	// Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -198,6 +200,34 @@ void APaladinCharacter::JumpAttack()
 	AnimMontagePlay(AttackMontage, FName("Attack4"));
 }
 
+void APaladinCharacter::DodgeFwd()
+{
+	CurrentState = EPlayerState::BlockDodge;
+	AnimMontagePlay(DodgeMontage, FName("DodgeFwd"));
+	GetWorldTimerManager().SetTimer(TimerDodgeRoll, this, &APaladinCharacter::RestDodgeRoll, 0.5f);
+}
+
+void APaladinCharacter::DodgeBwd()
+{
+	CurrentState = EPlayerState::BlockDodge;
+	AnimMontagePlay(DodgeMontage, FName("DodgeBwd"));
+	GetWorldTimerManager().SetTimer(TimerDodgeRoll, this, &APaladinCharacter::RestDodgeRoll, 0.5f);
+}
+
+void APaladinCharacter::DodgeLeft()
+{
+	CurrentState = EPlayerState::BlockDodge;
+	AnimMontagePlay(DodgeMontage, FName("DodgeLeft"));
+	GetWorldTimerManager().SetTimer(TimerDodgeRoll, this, &APaladinCharacter::RestDodgeRoll, 0.5f);
+}
+
+void APaladinCharacter::DodgeRight()
+{
+	CurrentState = EPlayerState::BlockDodge;
+	AnimMontagePlay(DodgeMontage, FName("DodgeRight"));
+	GetWorldTimerManager().SetTimer(TimerDodgeRoll, this, &APaladinCharacter::RestDodgeRoll, 0.5f);
+}
+
 void APaladinCharacter::StartBlocking()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, TEXT("Start Blocking"));
@@ -205,6 +235,7 @@ void APaladinCharacter::StartBlocking()
 	UPaladinAnimInstance* AnimInstance = Cast<UPaladinAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
 	{
+		CurrentState = EPlayerState::BlockDodge;
 		GetCharacterMovement()->DisableMovement();
 		AnimInstance->SetIsBlocking(true);
 	}
@@ -217,9 +248,15 @@ void APaladinCharacter::StopBlocking()
 	UPaladinAnimInstance* AnimInstance = Cast<UPaladinAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
 	{
+		CurrentState = EPlayerState::Ready;
 		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 		AnimInstance->SetIsBlocking(false);
 	}
+}
+
+void APaladinCharacter::RestDodgeRoll()
+{
+	CurrentState = EPlayerState::Ready;
 }
 
 void APaladinCharacter::AnimMontagePlay(UAnimMontage* MontageToPlay, FName SectionName, float PlayRate)
@@ -308,6 +345,12 @@ void APaladinCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		Input->BindAction(RunAction, ETriggerEvent::Triggered, this, &APaladinCharacter::Running);
 		Input->BindAction(RunAction, ETriggerEvent::Completed, this, &APaladinCharacter::StopRunning);
 
+		// Dodge Actions
+		Input->BindAction(DodgeFwdAction, ETriggerEvent::Triggered, this, &APaladinCharacter::DodgeFwd);
+		Input->BindAction(DodgeBwdAction, ETriggerEvent::Triggered, this, &APaladinCharacter::DodgeBwd);
+		Input->BindAction(DodgeLeftAction, ETriggerEvent::Triggered, this, &APaladinCharacter::DodgeLeft);
+		Input->BindAction(DodgeRightAction, ETriggerEvent::Triggered, this, &APaladinCharacter::DodgeRight);
+
 		// Blocking Actions
 		Input->BindAction(BlockAction, ETriggerEvent::Triggered, this, &APaladinCharacter::StartBlocking);
 		Input->BindAction(BlockAction, ETriggerEvent::Completed, this, &APaladinCharacter::StopBlocking);
@@ -333,8 +376,7 @@ void APaladinCharacter::DeactivateRightWeapon()
 float APaladinCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 	class AController* EventInstigator, AActor* DamageCauser)
 {
-	UPaladinAnimInstance* AnimInstance = Cast<UPaladinAnimInstance>(GetMesh()->GetAnimInstance());
-	if (AnimInstance->GetIsBlocking() == false)
+	if (CurrentState != EPlayerState::BlockDodge)
 	{
 		if (Health - DamageAmount <= 0.f)
 		{
@@ -356,7 +398,9 @@ float APaladinCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 		// Check If Player is Facing Enemy - Run Dot Product Logic
 		if (PlayerFacingActor(DamageCauser))
 		{
-			if (ShieldImpactSound)
+			UPaladinAnimInstance* AnimInstance = Cast<UPaladinAnimInstance>(GetMesh()->GetAnimInstance());
+			
+			if (ShieldImpactSound && AnimInstance->GetIsBlocking())
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, ShieldImpactSound, GetActorLocation());
 			}

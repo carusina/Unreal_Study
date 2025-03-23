@@ -10,6 +10,18 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "PaladinCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class EPlayerState : uint8
+{
+	Ready		UMETA(DisplayName = "Ready"),
+	NotReady	UMETA(DisplayName = "NotReady"),
+	Attacking	UMETA(DisplayName = "Attacking"),
+	BlockDodge	UMETA(DisplayName = "BlockDodge"),
+	Attacked	UMETA(DisplayName = "Attacked"),
+	Stunned		UMETA(DisplayName = "Stunned"),
+	Dead		UMETA(DisplayName = "Dead"),
+};
+
 // Declaration
 class USpringArmComponent;
 class UCameraComponent;
@@ -29,6 +41,9 @@ public:
 	// Sets default values for this character's properties
 	APaladinCharacter();
 
+	// Current State
+	EPlayerState CurrentState;
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -86,6 +101,18 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
 	UInputAction* BlockAction;
 
+	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
+	UInputAction* DodgeFwdAction;
+
+	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
+	UInputAction* DodgeBwdAction;
+
+	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
+	UInputAction* DodgeLeftAction;
+
+	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
+	UInputAction* DodgeRightAction;
+
 	// Walk Speed
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
 	float WalkSpeed;
@@ -107,9 +134,16 @@ protected:
 	void SpinAttack();
 	void JumpAttack();
 
+	// Dodge Roll
+	void DodgeFwd();
+	void DodgeBwd();
+	void DodgeLeft();
+	void DodgeRight();
+
 	// Blocking
 	void StartBlocking();
 	void StopBlocking();
+	void RestDodgeRoll();
 
 	// Handle Logic After Player Dies
 	UFUNCTION(BlueprintImplementableEvent)
@@ -129,6 +163,9 @@ protected:
 		);
 
 private:
+	// Timers
+	FTimerHandle TimerDodgeRoll;
+	
 	// Spring Arm Component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* SpringArmComponent;
@@ -140,6 +177,9 @@ private:
 	// Montages
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Montage", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AttackMontage;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Montage", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* DodgeMontage;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	UBoxComponent* RightWeaponCollision;
