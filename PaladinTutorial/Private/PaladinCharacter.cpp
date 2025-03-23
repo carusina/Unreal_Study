@@ -9,6 +9,7 @@
 #include "PaladinAnimInstance.h"
 #include "Components/BoxComponent.h"
 #include "HitInterface.h"
+#include "PlayerSaveGame.h"
 #include "Enemy/Enemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -52,10 +53,47 @@ APaladinCharacter::APaladinCharacter() :
 	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("Motion Warping Component"));
 }
 
+void APaladinCharacter::SavePlayerData()
+{
+	UPlayerSaveGame* SaveGameInstance = Cast<UPlayerSaveGame>(UGameplayStatics::CreateSaveGameObject(UPlayerSaveGame::StaticClass()));
+	if (SaveGameInstance)
+	{
+		SaveGameInstance->Health = Health;
+		SaveGameInstance->CheckpointLocation = GetActorLocation();
+
+		// Save Created Object to File
+		if (!UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("PlayerSaveSlot"), 0)) // Cannot Save Game
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SaveGameToSlot Failed."));
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("Save Game."));
+	}
+}
+
+void APaladinCharacter::LoadPlayerData()
+{
+	UPlayerSaveGame* LoadGameInstance = Cast<UPlayerSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("PlayerSaveSlot"), 0));
+
+	if (LoadGameInstance)
+	{
+		Health = LoadGameInstance->Health;
+		CheckpointLocation = LoadGameInstance->CheckpointLocation;
+	}
+}
+
 // Called when the game starts or when spawned
 void APaladinCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	LoadPlayerData();
+
+	// Spawn Player at Checkpoint Location
+	UWorld* World = GetWorld();
+	if (World && CheckpointLocation != FVector::ZeroVector)
+	{
+		SetActorLocation(CheckpointLocation);
+	}
 
 	CurrentState = EPlayerState::Ready;
 	
