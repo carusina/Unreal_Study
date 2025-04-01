@@ -7,6 +7,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "RPGAnimInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -89,6 +90,54 @@ void ARPGCharacter::SprintEnd()
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
+void ARPGCharacter::BasicAttack()
+{
+	if (AttackCombo >= 3)
+	{
+		ResetCombo();
+	}
+	
+	switch (AttackCombo)
+	{
+	case 0:
+		AnimMontagePlay(BasicAttackMontage, FName("Attack1"));
+		break;
+	case 1:
+		AnimMontagePlay(BasicAttackMontage, FName("Attack2"));
+		break;
+	case 2:
+		AnimMontagePlay(BasicAttackMontage, FName("Attack3"));
+		break;
+	default:
+		break;
+	}
+}
+
+void ARPGCharacter::ResetCombo()
+{
+	AttackCombo = 0;
+}
+
+void ARPGCharacter::AnimMontagePlay(UAnimMontage* MontageToPlay, FName SectionName, float PlayRate)
+{
+	URPGAnimInstance* AnimInstance = Cast<URPGAnimInstance>(GetMesh()->GetAnimInstance());
+	
+	if (AnimInstance && MontageToPlay)
+	{
+		if (!AnimInstance->Montage_IsPlaying(MontageToPlay))
+		{
+			PlayAnimMontage(MontageToPlay, PlayRate, SectionName);
+
+			if (MontageToPlay == BasicAttackMontage)
+			{
+				AttackCombo++;
+				GetWorldTimerManager().ClearTimer(ComboTimer);
+				GetWorldTimerManager().SetTimer(ComboTimer, this, &ARPGCharacter::ResetCombo, 1.7f);
+			}
+		}
+	}
+}
+
 // Called every frame
 void ARPGCharacter::Tick(float DeltaTime)
 {
@@ -107,6 +156,7 @@ void ARPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ARPGCharacter::Look);
 		Input->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ARPGCharacter::SprintBegin);
 		Input->BindAction(SprintAction, ETriggerEvent::Completed, this, &ARPGCharacter::SprintEnd);
+		Input->BindAction(AttackAction, ETriggerEvent::Completed, this, &ARPGCharacter::BasicAttack);
 	}
 }
 

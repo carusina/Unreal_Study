@@ -15,6 +15,8 @@ class USkeletalMeshComponent;
 class UInputMappingContext;
 class UInputAction;
 
+class UAnimMontage;
+
 UCLASS()
 class RPG_API ARPGCharacter : public ACharacter
 {
@@ -29,6 +31,10 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// Attack
+	FTimerHandle ComboTimer;
+	int AttackCombo = 0;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -47,11 +53,16 @@ protected:
 	UPROPERTY(EditAnywhere, Category = EnhancedInput)
     UInputAction* SprintAction;
 
+	UPROPERTY(EditAnywhere, Category = EnhancedInput)
+	UInputAction* AttackAction;
+
 	// Movement
 	void Move(const FInputActionValue& InputValue);
 	void Look(const FInputActionValue& InputValue);
 	void SprintBegin();
 	void SprintEnd();
+	void BasicAttack();
+	void ResetCombo();
 
 	// Speed
 	UPROPERTY(EditAnywhere, Category = Movement)
@@ -72,4 +83,10 @@ private:
 	// 무기
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* WeaponSkeletal;
+
+	// Montage
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Montage", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* BasicAttackMontage;
+
+	void AnimMontagePlay(UAnimMontage* MontageToPlay, FName SectionName = "Default", float PlayRate = 1.0f);
 };

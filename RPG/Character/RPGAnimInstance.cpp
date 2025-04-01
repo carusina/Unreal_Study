@@ -3,6 +3,7 @@
 
 #include "RPGAnimInstance.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 void URPGAnimInstance::UpdateAnimationProperties(float DeltaTime)
@@ -12,6 +13,8 @@ void URPGAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		FVector Velocity = RPGCharacter->GetVelocity();
 		Velocity.Z = 0;
 		Speed = Velocity.Size();
+
+		bIsInAir = RPGCharacter->GetCharacterMovement()->IsFalling();
 
 		FRotator const AimRotation = RPGCharacter->GetBaseAimRotation();
 		FRotator const MovementRotation = UKismetMathLibrary::MakeRotFromX(RPGCharacter->GetVelocity());
