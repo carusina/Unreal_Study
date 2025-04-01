@@ -54,6 +54,9 @@ protected:
     UInputAction* SprintAction;
 
 	UPROPERTY(EditAnywhere, Category = EnhancedInput)
+	UInputAction* JumpAction;
+
+	UPROPERTY(EditAnywhere, Category = EnhancedInput)
 	UInputAction* AttackAction;
 
 	// Movement
@@ -61,6 +64,8 @@ protected:
 	void Look(const FInputActionValue& InputValue);
 	void SprintBegin();
 	void SprintEnd();
+	void Jump();
+	void DelayedJump();
 	void BasicAttack();
 	void ResetCombo();
 
@@ -85,6 +90,9 @@ private:
 	USkeletalMeshComponent* WeaponSkeletal;
 
 	// Montage
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Montage", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* JumpMontage;
+	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Montage", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* BasicAttackMontage;
 

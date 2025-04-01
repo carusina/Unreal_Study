@@ -31,9 +31,6 @@ ARPGCharacter::ARPGCharacter()
 	WeaponSkeletal = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon Katana"));
 	WeaponSkeletal->SetupAttachment(GetMesh(), "WeaponR");
 	// 무기 끝
-
-	
-	
 	
 }
 
@@ -88,6 +85,32 @@ void ARPGCharacter::SprintBegin()
 void ARPGCharacter::SprintEnd()
 {
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+void ARPGCharacter::Jump()
+{
+	if (GetCharacterMovement()->IsMovingOnGround())
+	{
+		if (JumpMontage)
+		{
+			PlayAnimMontage(JumpMontage);
+		}
+		
+		FTimerHandle JumpTimerHandle;
+		GetWorldTimerManager().SetTimer(JumpTimerHandle, this, &ARPGCharacter::DelayedJump, 0.6f);
+	}
+}
+
+void ARPGCharacter::DelayedJump()
+{
+	FVector ForwardVelocity = GetVelocity();
+	ForwardVelocity.Z = 0;
+
+	float JumpVerticalVelocity = GetCharacterMovement()->JumpZVelocity;
+
+	FVector JumpVelocity = ForwardVelocity + FVector(0, 0, JumpVerticalVelocity);
+
+	LaunchCharacter(JumpVelocity, true, true);
 }
 
 void ARPGCharacter::BasicAttack()
@@ -156,6 +179,7 @@ void ARPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ARPGCharacter::Look);
 		Input->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ARPGCharacter::SprintBegin);
 		Input->BindAction(SprintAction, ETriggerEvent::Completed, this, &ARPGCharacter::SprintEnd);
+		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ARPGCharacter::Jump);
 		Input->BindAction(AttackAction, ETriggerEvent::Completed, this, &ARPGCharacter::BasicAttack);
 	}
 }
