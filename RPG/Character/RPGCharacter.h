@@ -35,6 +35,9 @@ public:
 	// Attack
 	FTimerHandle ComboTimer;
 	int AttackCombo = 0;
+
+	// Turning
+	bool bCanTurn = true;
 	
 protected:
 	// Called when the game starts or when spawned
