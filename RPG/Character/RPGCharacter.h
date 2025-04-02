@@ -57,6 +57,9 @@ protected:
 	UInputAction* JumpAction;
 
 	UPROPERTY(EditAnywhere, Category = EnhancedInput)
+	UInputAction* DodgeAction;
+
+	UPROPERTY(EditAnywhere, Category = EnhancedInput)
 	UInputAction* AttackAction;
 
 	// Movement
@@ -65,6 +68,7 @@ protected:
 	void SprintBegin();
 	void SprintEnd();
 	void Jump();
+	void Dodge();
 	void DelayedJump();
 	void BasicAttack();
 	void ResetCombo();
@@ -92,6 +96,9 @@ private:
 	// Montage
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Montage", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* JumpMontage;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Montage", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* DodgeMontage;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Montage", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* BasicAttackMontage;

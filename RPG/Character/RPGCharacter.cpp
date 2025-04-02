@@ -101,6 +101,38 @@ void ARPGCharacter::Jump()
 	}
 }
 
+void ARPGCharacter::Dodge()
+{
+	const FVector Forward = GetActorForwardVector();
+	const FVector MoveDir = GetVelocity().GetSafeNormal();
+
+	const double CosTheta = FVector::DotProduct(Forward, MoveDir);
+	double Theta = FMath::Acos(CosTheta);
+	Theta = FMath::RadiansToDegrees(Theta);
+
+	const FVector CrossProduct = FVector::CrossProduct(Forward, MoveDir);
+	if (CrossProduct.Z < 0)
+	{
+		Theta *= -1.f;
+	}
+
+	FName Section("DodgeBwd");
+	if (Theta >= -45.f && Theta < 45.f)
+	{
+		Section = FName("DodgeFwd");
+	}
+	else if (Theta >= -135.f && Theta < -45.f)
+	{
+		Section = FName("DodgeLeft");
+	}
+	else if (Theta >= 45.f && Theta < 135.f)
+	{
+		Section = FName("DodgeRight");
+	}
+
+	AnimMontagePlay(DodgeMontage, Section);
+}
+
 void ARPGCharacter::DelayedJump()
 {
 	FVector ForwardVelocity = GetVelocity();
@@ -147,7 +179,7 @@ void ARPGCharacter::AnimMontagePlay(UAnimMontage* MontageToPlay, FName SectionNa
 	
 	if (AnimInstance && MontageToPlay)
 	{
-		if (!AnimInstance->Montage_IsPlaying(MontageToPlay))
+		if (!AnimInstance->IsAnyMontagePlaying())
 		{
 			PlayAnimMontage(MontageToPlay, PlayRate, SectionName);
 
@@ -155,7 +187,7 @@ void ARPGCharacter::AnimMontagePlay(UAnimMontage* MontageToPlay, FName SectionNa
 			{
 				AttackCombo++;
 				GetWorldTimerManager().ClearTimer(ComboTimer);
-				GetWorldTimerManager().SetTimer(ComboTimer, this, &ARPGCharacter::ResetCombo, 1.7f);
+				GetWorldTimerManager().SetTimer(ComboTimer, this, &ARPGCharacter::ResetCombo, 2.3f);
 			}
 		}
 	}
@@ -180,6 +212,7 @@ void ARPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		Input->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ARPGCharacter::SprintBegin);
 		Input->BindAction(SprintAction, ETriggerEvent::Completed, this, &ARPGCharacter::SprintEnd);
 		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ARPGCharacter::Jump);
+		Input->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &ARPGCharacter::Dodge);
 		Input->BindAction(AttackAction, ETriggerEvent::Completed, this, &ARPGCharacter::BasicAttack);
 	}
 }
