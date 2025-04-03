@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "RPGAnimInstance.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -30,6 +31,9 @@ ARPGCharacter::ARPGCharacter()
 	// 무기 시작
 	WeaponSkeletal = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon Katana"));
 	WeaponSkeletal->SetupAttachment(GetMesh(), "WeaponR");
+
+	WeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Weapon Box"));
+	WeaponCollision->SetupAttachment(GetMesh(), "WeaponR");
 	// 무기 끝
 	
 }
@@ -47,6 +51,13 @@ void ARPGCharacter::BeginPlay()
 			Subsystem->AddMappingContext(InputMapping, 0);
 		}
 	}
+
+	// Weapon Collision Setting
+	WeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &ARPGCharacter::OnWeaponOverlap);
+	WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponCollision->SetCollisionObjectType(ECC_WorldDynamic);
+	WeaponCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	WeaponCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 }
 
 void ARPGCharacter::Move(const FInputActionValue& InputValue)
@@ -173,6 +184,16 @@ void ARPGCharacter::ResetCombo()
 	AttackCombo = 0;
 }
 
+void ARPGCharacter::OnWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (IsValid(SweepResult.GetActor()) && SweepResult.GetActor() != this)
+	{
+		// Apply Damage
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, TEXT("Weapon Overlap"));
+	}
+}
+
 void ARPGCharacter::AnimMontagePlay(UAnimMontage* MontageToPlay, FName SectionName, float PlayRate)
 {
 	URPGAnimInstance* AnimInstance = Cast<URPGAnimInstance>(GetMesh()->GetAnimInstance());
@@ -215,5 +236,15 @@ void ARPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		Input->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &ARPGCharacter::Dodge);
 		Input->BindAction(AttackAction, ETriggerEvent::Completed, this, &ARPGCharacter::BasicAttack);
 	}
+}
+
+void ARPGCharacter::ActivateWeapon()
+{
+	WeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void ARPGCharacter::DeactivateWeapon()
+{
+	WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 

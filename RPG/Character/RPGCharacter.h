@@ -11,6 +11,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class USkeletalMeshComponent;
+class UBoxComponent;
 
 class UInputMappingContext;
 class UInputAction;
@@ -35,6 +36,9 @@ public:
 	// Attack
 	FTimerHandle ComboTimer;
 	int AttackCombo = 0;
+
+	virtual void ActivateWeapon();
+	virtual void DeactivateWeapon();
 
 	// Turning
 	bool bCanTurn = true;
@@ -82,7 +86,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Movement)
 	float SprintSpeed = 600.f;
 	
-	
+	// Weapon Collision Overlap
+	UFUNCTION()
+	void OnWeaponOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult);
 
 private:
 	// 카메라
@@ -95,6 +107,9 @@ private:
 	// 무기
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* WeaponSkeletal;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* WeaponCollision;
 
 	// Montage
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Montage", meta = (AllowPrivateAccess = "true"))
