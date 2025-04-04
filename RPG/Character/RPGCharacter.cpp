@@ -10,6 +10,7 @@
 #include "RPGAnimInstance.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "RPG/Interfaces/HitInterface.h"
 
 // Sets default values
 ARPGCharacter::ARPGCharacter()
@@ -98,11 +99,6 @@ void ARPGCharacter::SprintEnd()
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
-void ARPGCharacter::Jump()
-{
-	Super::Jump();
-}
-
 void ARPGCharacter::Dodge()
 {
 	const FVector Forward = GetActorForwardVector();
@@ -169,7 +165,11 @@ void ARPGCharacter::OnWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	if (IsValid(SweepResult.GetActor()) && SweepResult.GetActor() != this)
 	{
 		// Apply Damage
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, TEXT("Weapon Overlap"));
+		IHitInterface* HitInterface = Cast<IHitInterface>(SweepResult.GetActor());
+		if (HitInterface)
+		{
+			HitInterface->HitInterface_Implementation(SweepResult);
+		}
 	}
 }
 
@@ -213,7 +213,6 @@ void ARPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ARPGCharacter::Look);
 		Input->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ARPGCharacter::SprintBegin);
 		Input->BindAction(SprintAction, ETriggerEvent::Completed, this, &ARPGCharacter::SprintEnd);
-		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ARPGCharacter::Jump);
 		Input->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &ARPGCharacter::Dodge);
 		Input->BindAction(AttackAction, ETriggerEvent::Completed, this, &ARPGCharacter::BasicAttack);
 	}

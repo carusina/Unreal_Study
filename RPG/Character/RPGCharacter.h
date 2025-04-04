@@ -62,9 +62,6 @@ protected:
     UInputAction* SprintAction;
 
 	UPROPERTY(EditAnywhere, Category = EnhancedInput)
-	UInputAction* JumpAction;
-
-	UPROPERTY(EditAnywhere, Category = EnhancedInput)
 	UInputAction* DodgeAction;
 
 	UPROPERTY(EditAnywhere, Category = EnhancedInput)
@@ -75,7 +72,6 @@ protected:
 	void Look(const FInputActionValue& InputValue);
 	void SprintBegin();
 	void SprintEnd();
-	virtual void Jump() override;
 	void Dodge();
 	void BasicAttack();
 	void ResetCombo();
