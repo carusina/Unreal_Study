@@ -12,6 +12,7 @@ void UAttackAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnim
 		if (Character)
 		{
 			Character->bCanTurn = false;
+			Character->IsAttacking = true;
 			Character->ActivateWeapon();
 		}
 	}
@@ -25,6 +26,7 @@ void UAttackAnimNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSe
 		if (Character)
 		{
 			Character->bCanTurn = true;
+			Character->IsAttacking = false;
 			Character->DeactivateWeapon();
 		}
 	}

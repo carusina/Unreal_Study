@@ -200,7 +200,7 @@ void ARPGCharacter::AnimMontagePlay(UAnimMontage* MontageToPlay, FName SectionNa
 	
 	if (AnimInstance && MontageToPlay)
 	{
-		if (!AnimInstance->IsAnyMontagePlaying())
+		if (!IsAttacking)
 		{
 			PlayAnimMontage(MontageToPlay, PlayRate, SectionName);
 

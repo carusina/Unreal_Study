@@ -36,6 +36,7 @@ public:
 	// Attack
 	FTimerHandle ComboTimer;
 	int AttackCombo = 0;
+	bool IsAttacking = false;
 
 	virtual void ActivateWeapon();
 	virtual void DeactivateWeapon();
