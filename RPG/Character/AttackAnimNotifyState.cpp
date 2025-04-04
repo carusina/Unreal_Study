@@ -11,6 +11,7 @@ void UAttackAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnim
 		Character = Cast<ARPGCharacter>(MeshComp->GetOwner());
 		if (Character)
 		{
+			Character->AttackCombo++;
 			Character->bCanTurn = false;
 			Character->IsAttacking = true;
 			Character->ActivateWeapon();

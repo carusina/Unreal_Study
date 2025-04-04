@@ -75,9 +75,8 @@ protected:
 	void Look(const FInputActionValue& InputValue);
 	void SprintBegin();
 	void SprintEnd();
-	void Jump();
+	virtual void Jump() override;
 	void Dodge();
-	void DelayedJump();
 	void BasicAttack();
 	void ResetCombo();
 
@@ -113,9 +112,6 @@ private:
 	UBoxComponent* WeaponCollision;
 
 	// Montage
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Montage", meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* JumpMontage;
-
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Montage", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* DodgeMontage;
 	

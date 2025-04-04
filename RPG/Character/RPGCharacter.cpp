@@ -100,16 +100,7 @@ void ARPGCharacter::SprintEnd()
 
 void ARPGCharacter::Jump()
 {
-	if (GetCharacterMovement()->IsMovingOnGround())
-	{
-		if (JumpMontage)
-		{
-			PlayAnimMontage(JumpMontage);
-		}
-		
-		FTimerHandle JumpTimerHandle;
-		GetWorldTimerManager().SetTimer(JumpTimerHandle, this, &ARPGCharacter::DelayedJump, 0.6f);
-	}
+	Super::Jump();
 }
 
 void ARPGCharacter::Dodge()
@@ -142,18 +133,6 @@ void ARPGCharacter::Dodge()
 	}
 
 	AnimMontagePlay(DodgeMontage, Section);
-}
-
-void ARPGCharacter::DelayedJump()
-{
-	FVector ForwardVelocity = GetVelocity();
-	ForwardVelocity.Z = 0;
-
-	float JumpVerticalVelocity = GetCharacterMovement()->JumpZVelocity;
-
-	FVector JumpVelocity = ForwardVelocity + FVector(0, 0, JumpVerticalVelocity);
-
-	LaunchCharacter(JumpVelocity, true, true);
 }
 
 void ARPGCharacter::BasicAttack()
@@ -200,16 +179,18 @@ void ARPGCharacter::AnimMontagePlay(UAnimMontage* MontageToPlay, FName SectionNa
 	
 	if (AnimInstance && MontageToPlay)
 	{
-		if (!IsAttacking)
+		if (MontageToPlay == BasicAttackMontage)
 		{
-			PlayAnimMontage(MontageToPlay, PlayRate, SectionName);
-
-			if (MontageToPlay == BasicAttackMontage)
+			if (!IsAttacking)
 			{
-				AttackCombo++;
+				PlayAnimMontage(MontageToPlay, PlayRate, SectionName);
 				GetWorldTimerManager().ClearTimer(ComboTimer);
 				GetWorldTimerManager().SetTimer(ComboTimer, this, &ARPGCharacter::ResetCombo, 2.3f);
 			}
+		}
+		else if (!AnimInstance->IsAnyMontagePlaying())
+		{
+			PlayAnimMontage(MontageToPlay, PlayRate, SectionName);
 		}
 	}
 }

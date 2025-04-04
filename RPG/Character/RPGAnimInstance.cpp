@@ -10,11 +10,10 @@ void URPGAnimInstance::UpdateAnimationProperties(float DeltaTime)
 {
 	if (RPGCharacter)
 	{
-		FVector Velocity = RPGCharacter->GetVelocity();
-		Velocity.Z = 0;
-		Speed = Velocity.Size();
+		Velocity = RPGCharacter->GetVelocity();
+		Speed = FVector(Velocity.X, Velocity.Y, 0).Size();
 
-		bIsInAir = RPGCharacter->GetCharacterMovement()->IsFalling();
+		bIsFalling = RPGCharacter->GetCharacterMovement()->IsFalling();
 
 		FRotator const AimRotation = RPGCharacter->GetBaseAimRotation();
 		FRotator const MovementRotation = UKismetMathLibrary::MakeRotFromX(RPGCharacter->GetVelocity());
