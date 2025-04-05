@@ -3,6 +3,7 @@
 
 #include "Enemy.h"
 
+#include "AIBehavior/AttackStrategy.h"
 #include "AIBehavior/EnemyAIController.h"
 
 // Sets default values
@@ -27,6 +28,15 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (AttackStrategy.IsValid())
+	{
+		AttackStrategy->Exectue(this);
+	}
+	else
+	{
+		AttackStrategy = NewObject<UAttackStrategy>();
+		AttackStrategy->Exectue(this);
+	}
 }
 
 void AEnemy::HitInterface_Implementation(FHitResult HitResult)

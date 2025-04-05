@@ -7,6 +7,7 @@
 #include "RPG/Interfaces/HitInterface.h"
 #include "Enemy.generated.h"
 
+class UAttackStrategy;
 class AEnemyAIController;
 
 UCLASS()
@@ -33,6 +34,9 @@ protected:
 	AEnemyAIController* EnemyAIController;
 
 private:
+	// Combat Strategy
+	TWeakObjectPtr<UAttackStrategy> AttackStrategy;
+	
 	// Montage
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Montage", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* HitMontage;
