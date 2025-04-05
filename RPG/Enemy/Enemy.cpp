@@ -3,6 +3,8 @@
 
 #include "Enemy.h"
 
+#include "AIBehavior/EnemyAIController.h"
+
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -15,7 +17,9 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// Setup Enemy AI Controller
+	EnemyAIController = Cast<AEnemyAIController>(GetController());
 }
 
 // Called every frame

@@ -10,6 +10,8 @@
 #include "RPGAnimInstance.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
 #include "RPG/Interfaces/HitInterface.h"
 
 // Sets default values
@@ -18,7 +20,7 @@ ARPGCharacter::ARPGCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// 카메라 시작
+	// 카메라
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
 	SpringArmComp->SetupAttachment(RootComponent);
 	SpringArmComp->TargetArmLength = 300.f;
@@ -27,16 +29,16 @@ ARPGCharacter::ARPGCharacter()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Follow Camera"));
 	CameraComp->SetupAttachment(SpringArmComp);
 	CameraComp->bUsePawnControlRotation = false;
-	// 카메라 끝
 
-	// 무기 시작
+	// 무기
 	WeaponSkeletal = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon Katana"));
 	WeaponSkeletal->SetupAttachment(GetMesh(), "WeaponR");
 
 	WeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Weapon Box"));
 	WeaponCollision->SetupAttachment(GetMesh(), "WeaponR");
-	// 무기 끝
-	
+
+	// StimuliSource
+	SetupStimuliSource();
 }
 
 // Called when the game starts or when spawned
@@ -192,6 +194,16 @@ void ARPGCharacter::AnimMontagePlay(UAnimMontage* MontageToPlay, FName SectionNa
 		{
 			PlayAnimMontage(MontageToPlay, PlayRate, SectionName);
 		}
+	}
+}
+
+void ARPGCharacter::SetupStimuliSource()
+{
+	StimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("StimuliSource"));
+	if (StimuliSource)
+	{
+		StimuliSource->RegisterForSense(TSubclassOf<UAISense_Sight>());
+		StimuliSource->RegisterWithPerceptionSystem();
 	}
 }
 

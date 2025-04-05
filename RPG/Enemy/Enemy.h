@@ -7,6 +7,8 @@
 #include "RPG/Interfaces/HitInterface.h"
 #include "Enemy.generated.h"
 
+class AEnemyAIController;
+
 UCLASS()
 class RPG_API AEnemy : public ACharacter, public IHitInterface
 {
@@ -25,6 +27,10 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	// Enemy AI Controller
+	UPROPERTY()
+	AEnemyAIController* EnemyAIController;
 
 private:
 	// Montage

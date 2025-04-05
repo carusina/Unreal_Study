@@ -18,6 +18,8 @@ class UInputAction;
 
 class UAnimMontage;
 
+class UAIPerceptionStimuliSourceComponent;
+
 UCLASS()
 class RPG_API ARPGCharacter : public ACharacter
 {
@@ -115,4 +117,10 @@ private:
 	UAnimMontage* BasicAttackMontage;
 
 	void AnimMontagePlay(UAnimMontage* MontageToPlay, FName SectionName = "Default", float PlayRate = 1.0f);
+
+	// AI Perception System
+	UPROPERTY()
+	UAIPerceptionStimuliSourceComponent* StimuliSource;
+	void SetupStimuliSource();
+	
 };
