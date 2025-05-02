@@ -8,7 +8,7 @@ void UWarriorHeroAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 
-	if (OwningHeroCharacter)
+	if (OwningCharacter)
 	{
 		OwningHeroCharacter = Cast<AWarriorHeroCharacter>(OwningCharacter);
 	}
