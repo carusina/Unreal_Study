@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+ #include "CoreMinimal.h"
 #include "EnhancedInputComponent.h"
 #include "DataAssets/Input/DataAsset_InputConfig.h"
 #include "WarriorInputComponent.generated.h"
